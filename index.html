@@ -1,324 +1,826 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terrorist Quiz</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .image-container img {
-      height: 300px;
-      aspect-ratio: 3 / 4;
-    }
-
-    .answer-button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .scoreboard {
-      margin-top: 20px;
-      font-size: 18px;
-    }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 34px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-
-    input:checked + .slider {
-      background-color: #2196F3;
-    }
-
-    input:focus + .slider {
-      box-shadow: 0 0 1px #2196F3;
-    }
-
-    input:checked + .slider:before {
-      -webkit-transform: translateX(26px);
-      -ms-transform: translateX(26px);
-      transform: translateX(26px);
-    }
-
-    .slider.round {
-      border-radius: 34px;
-    }
-
-    .slider.round:before {
-      border-radius: 50%;
-    }
-
-    .about {
-      margin-top: 2rem;
-      font-size: 14px;
-    }
-
-    .about summary {
-      cursor: pointer;
-    }
-
-    .about summary:first-of-type {
-      list-style-type: "❓";
-    }
-  </style>
-
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script defer src="https://analytics.eu.umami.is/script.js" data-website-id="c21f2db2-88e9-4f47-931e-106a38134e74"></script>
-</head>
-<body>
-  <div class="container">
-    <h1>Terrorist Quiz</h1>
-    <div id="quiz-container"></div>
-    <div id="scoreboard" class="scoreboard">Doğru: 0 | Yanlış: 0</div>
-    <br/>
-    <button id="reset-button">Skoru Sıfırla</button>
-    <br/>
-    <h2>Sivilleri Ekle</h2>
-    <label class="switch">
-      <input type="checkbox" id="include-civilians-toggle" onchange="toggleIncludeCivilians()" checked>
-      <span class="slider round"></span>
-    </label>
-    <details class="about">
-      <summary>Hakkında</summary>
-      <p>Veriler herkese açık olarak yayınlanan <a href="https://www.terorarananlar.pol.tr/tarananlar/" target="_blank">T.C. İçişleri Bakanlığı Terör Arananlar</a> listesinden alınmaktadır.</p>
-      <p>Sivillerin fotoğrafları yapay zeka ile insan fotoğrafı üreten <a target="_blank" href="https://thispersondoesnotexist.com">https://thispersondoesnotexist.com</a> adresinden alınmaktadır.</p>
-    </details>
-  </div>
-<script>
-
-  document.getElementById('reset-button').addEventListener('click', function() {
-    correctScore = 0;
-    incorrectScore = 0;
-    totalQuestionsAnswered = 0;
-    updateScoreboard();
-  });
-
-  let correctScore = localStorage.getItem('correctScore') ? parseInt(localStorage.getItem('correctScore')) : 0;
-  let incorrectScore = localStorage.getItem('incorrectScore') ? parseInt(localStorage.getItem('incorrectScore')) : 0;
-  let totalQuestionsAnswered = correctScore + incorrectScore;
-
-  let includeCivilians = true;
-
-  async function fetchTerroristData() {
-    try {
-      const response = await fetch('https://raw.githubusercontent.com/osumatu/terorist-quiz/main/data.json');
-
-      if (!response.ok) {
-        throw new Error('Hata: Veriler yüklenemedi, lütfen sayfayı yenileyin.');
-      }
-      const data = await response.json();
-      return data.filter((terrorist) => !!terrorist.GorselURL?.length)
-        .map(terrorist => {
-          terrorist.IlkGorselURL = "https://www.terorarananlar.pol.tr/" + terrorist.IlkGorselURL;
-          return terrorist;
-        });
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-
-      return [];
-    }
-  }
-
-  async function fetchCivilianData() {
-    try {
-      const civilianData = [];
-      for (let i = 0; i < 750; i++) {
-        const timestamp = new Date().getTime();
-        const civilianImageUrl = `https://thispersondoesnotexist.com/?timestamp=${timestamp}`;
-        civilianData.push({
-          TOrgutAdi: 'Sivil',
-          IlkGorselURL: civilianImageUrl
-        });
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terrorist Quiz</title>
+    <style>
+      :root {
+        --la: #f2f2f2;
+        --lr: #000;
+        --lh: #fff;
+        --lm: #6d6d6d;
+        --ll: #000;
+        --lv: #616161;
+        --lb: #dedfdf;
+        --lb2: #32373c;
+        --lk: #cd2653;
+        --lac: #cd2653;
+        --ly: green;
+        --da: #181818;
+        --dr: #fff;
+        --dh: #0d0d0d;
+        --dm: #d1d1d1;
+        --dl: #e5e5e5;
+        --dv: #aaa;
+        --db: #222;
+        --db2: #cdc8c3;
+        --dk: #cd2653;
+        --dac: #f47983;
+        --dy: lightgreen;
+        --span: #616161;
+        --col2: #787d85;
+        --bg2: #fcfcfc;
+        --brd2: #e0e1e1;
+        --fft: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+        --ffh: Inter, system-ui;
       }
 
-      return civilianData;
-    } catch (error) {
-      console.error('Hata: Sivil verileri alınamadı:', error);
-      return [];
-    }
-  }
-
-  async function populateQuizData() {
-    let terroristData = await fetchTerroristData();
-    let civilianData = [];
-
-    if (includeCivilians) {
-      civilianData = await fetchCivilianData();
-    }
-
-    const combinedData = includeCivilians ? [...terroristData, ...civilianData] : terroristData;
-    combinedData.sort(() => Math.random() - 0.5);
-
-    return combinedData;
-  }
-
-  function toggleIncludeCivilians() {
-    includeCivilians = !includeCivilians;
-  }
-
-  async function displayQuiz() {
-    const terroristData = await populateQuizData();
-
-    if (terroristData.length === 0) {
-      alert('Hata: Veriler yüklenemedi. Lütfen sayfayı yenileyin.');
-
-      return;
-    }
-
-    const randomIndex = Math.floor(Math.random() * terroristData.length);
-    const currentTerrorist = terroristData[randomIndex];
-    const correctAnswer = currentTerrorist.TOrgutAdi;
-    const uniqueTerroristNames = Array.from(new Set(terroristData.map(data => data.TOrgutAdi)));
-    const indexToRemove = uniqueTerroristNames.indexOf(correctAnswer);
-
-    if (indexToRemove !== -1) {
-      uniqueTerroristNames.splice(indexToRemove, 1);
-    }
-
-    const incorrectAnswers = [];
-
-    for (let i = 0; i < 3; i++) {
-      const randomIndex = Math.floor(Math.random() * uniqueTerroristNames.length);
-      incorrectAnswers.push(uniqueTerroristNames[randomIndex]);
-      uniqueTerroristNames.splice(randomIndex, 1);
-    }
-
-    const allAnswers = [correctAnswer, ...incorrectAnswers].sort(() => Math.random() - 0.5);
-    const quizContainer = document.getElementById('quiz-container');
-
-    quizContainer.innerHTML = `<div class="image-container">
-      <img src="${currentTerrorist.IlkGorselURL}" alt="Terrorist Image">
-    </div>
-    <p>Hangi örgüt?</p>
-    ${allAnswers.map(answer => `<button class="answer-button" onclick="checkAnswer('${correctAnswer}', '${answer}')">${answer}</button>`).join('')}
-    `;
-  }
-
-  async function checkQuestionCount() {
-    totalQuestionsAnswered++;
-
-    if (totalQuestionsAnswered % 20 === 0) {
-      const successRate = ((correctScore / totalQuestionsAnswered) * 100).toFixed(2);
-
-      let title = '';
-
-      if (successRate >= 80) {
-        title = 'MIT göreve çağırıyor!';
-      } else if (successRate >= 60) {
-        title = 'Yürü be babuş!';
-      } else if (successRate >= 40) {
-        title = 'Ha gayret.';
-      } else {
-        title = 'Hocam göz var izan var ya.';
+      @media(prefers-color-scheme: light) {
+        :root {
+          --arka: var(--la);
+          --renk: var(--lr);
+          --hefot: var(--lh);
+          --metin: var(--lm);
+          --link: var(--ll);
+          --visited: var(--lv);
+          --border: var(--lb);
+          --border2: var(--lb2);
+          --kirmizi: var(--lk);
+          --accent: var(--lac);
+          --yesil: var(--ly)
+        }
       }
 
-      Swal.fire({
-        title: title,
-        text: `%${successRate} oranla doğru bildin. Devam mı baştan mı?`,
-        showCancelButton: true,
-        confirmButtonText: 'Devam',
-        cancelButtonText: 'Baştan',
-        icon: 'info'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          displayQuiz();
+      @media(prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --arka: var(--da);
+          --renk: var(--dr);
+          --hefot: var(--dh);
+          --metin: var(--dm);
+          --link: var(--dl);
+          --visited: var(--dv);
+          --border: var(--db);
+          --border2: var(--db2);
+          --kirmizi: var(--dk);
+          --accent: var(--dac);
+          --yesil: var(--dy)
+        }
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 800;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 800;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 900;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa25L7SUc.woff2) format('woff2');
+        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF
+      }
+
+      @font-face {
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 900;
+        font-display: swap;
+        src: url(//fonts.gstatic.com/s/inter/v2/UcC73FwrK3iLTeHuS_fvQtMwCp50KnMa1ZL7.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD
+      }
+
+      html {
+        font-size: 62.5%;
+        min-width: 310px;
+        accent-color: var(--accent);
+        scroll-behavior: smooth
+      }
+
+      html,
+      body {
+        border: none;
+        margin: 0;
+        padding: 0;
+        background-color: var(--hefot);
+      }
+
+      body {
+        color: var(--renk);
+        box-sizing: border-box;
+        font-family: var(--ffh);
+        font-size: 1.8rem;
+        letter-spacing: -.015em;
+        text-align: left;
+      }
+
+      a {
+        color: var(--link);
+        text-decoration-line: underline;
+        text-decoration-color: var(--col2)
+      }
+
+      a:hover,
+      a:focus {
+        text-decoration: none
+      }
+
+      button {
+        appearance: none;
+        background: var(--accent);
+        border: none;
+        border-radius: .3rem;
+        color: var(--hefot);
+        cursor: pointer;
+        display: inline-block;
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: .0333em;
+        line-height: 1.25;
+        margin: 0;
+        opacity: 1;
+        padding: 1.1em 1.44em;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: opacity .15s linear;
+      }
+
+      #trr {
+        font-family: var(--fft);
+        letter-spacing: inherit;
+        text-align: center;
+        display: block;
+        position: relative;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
+      }
+
+      #trr .answer-button,
+      #trr #reset-button {
+        color: #fff;
+        cursor: pointer;
+        flex: auto;
+        font-size: small;
+      }
+
+      #trr .answer-button {
+        font-size: initial;
+        line-height: 1;
+        padding: 0;
+        height: 6rem;
+        width: calc(50% - 1rem);
+        max-width: 28rem;
+        background: var(--border);
+        color: var(--renk);
+        border: 1px dashed var(--col2);
+      }
+
+      #trr .answer-button:hover {
+        border-color: var(--accent);
+      }
+
+      #trr #reset-button {
+        font-size: x-small;
+        background: red;
+        flex-grow: 0;
+        margin-right: 10%;
+      }
+
+      #trr #quiz-container img {
+        margin: auto;
+        width: 100%;
+        object-fit: contain;
+        display: block;
+        min-height: 300px;
+      }
+
+      #trr .abuttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        flex-direction: row;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #trr #quiz-container {
+        position: relative;
+        min-height: 465px;
+        overflow: hidden;
+      }
+
+      #trr h2 {
+        margin-top: 0;
+      }
+
+      #trr h3 {
+        margin: 1rem auto;
+      }
+
+      #trr h4 {
+        margin: 0;
+      }
+
+      #siviller {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem auto 3rem;
+      }
+
+      #trr .container {
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        padding: 3vh 0.3vw;
+        width: 58rem;
+        max-width: 100%;
+        min-height: 73rem;
+        border: 1px solid var(--col2);
+        border-radius: 1rem;
+        background: var(--hefot);
+      }
+
+      #trr .image-container img {
+        height: 300px;
+        aspect-ratio: 3 / 4;
+      }
+
+      #trr .scoreboard {
+        margin: 1rem auto;
+        background: var(--arka);
+        border: 1px solid var(--border);
+        border-radius: 3rem;
+        height: 8rem;
+        display: flex;
+        gap: 1rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #trr .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+        zoom: 0.5;
+        margin-top: 0.1rem;
+      }
+
+      #trr .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      #trr .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+
+      #trr .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+      }
+
+      #trr input:checked+.slider {
+        background-color: #2196f3;
+      }
+
+      #trr input:focus+.slider {
+        box-shadow: 0 0 1px #2196f3;
+      }
+
+      #trr input:checked+.slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      #trr .slider.round {
+        border-radius: 34px;
+      }
+
+      #trr .slider.round:before {
+        border-radius: 50%;
+      }
+
+      #trr .about {
+        font-size: small;
+        float: right;
+        text-align: right;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1;
+        background: var(--arka);
+        padding: 1rem;
+      }
+
+      #trr .about p {
+        font-size: smaller;
+      }
+
+      #trr .about summary {
+        cursor: pointer;
+      }
+
+      #trr .about summary:first-of-type {
+        list-style-type: "❓";
+      }
+
+      #scoreboard>span>strong {
+        font-size: 2.5rem;
+        display: inline-block;
+        vertical-align: text-bottom;
+        line-height: 1;
+      }
+
+      #scoreboard>span:first-child>strong,
+      .d0ru>span:first-child>strong {
+        color: green;
+      }
+
+      #scoreboard>span:not(:first-child)>strong,
+      .naud0ru>span:not(:first-child)>strong {
+        color: red;
+      }
+
+      html.swal2-shown,
+      html.swal2-shown>body {
+        background: var(--arka);
+      }
+
+      .swal2-show {
+        transform: scale(1.2);
+      }
+
+      @media (min-width: 700px) {
+        .swal2-show {
+          zoom: 1.2;
+        }
+      }
+
+      div:where(.swal2-container) .swal2-html-container>small {
+        display: block;
+        width: 100%;
+      }
+
+      #trr a.opyls {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        padding: 1rem;
+        width: 50%;
+        text-decoration: none;
+        font-size: small;
+        z-index: 19;
+        border-bottom: 1px solid var(--accent);
+      }
+
+      #trr details.about[open] {
+        z-index: 20 !important;
+      }
+
+      #trrimg {
+        background-image: var(--background);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      #trr .michaelsikkofield {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 1rem;
+        color: var(--border2);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: 0 1rem;
+        font-size: 3rem;
+      }
+
+      #trr .michaelsikkofield:hover {
+        backdrop-filter: contrast(0.5);
+      }
+
+      #trr .michaelsikkofield:hover:after {
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 999;
+        content: "Acil durumlar harici kullanma! 🚨";
+        font-size: 1.3rem;
+        color: red;
+        font-weight: normal;
+        display: block;
+        width: 9rem;
+        margin-right: 6rem;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js" integrity="sha512-ziDG00v9lDjgmzxhvyX5iztPHpSryN/Ct/TAMPmMmS2O3T1hFPRdrzVCSvwnbPbFNie7Yg5mF7NUSSp5smu7RA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body>
+    <figure id="trr">
+      <div class="container">
+        <h2 class="has-small-font-size">Terrorist Quiz <a class="michaelsikkofield" href="javascript://" title="michaelsikkofield fix">🐺</a>
+        </h2>
+        <div id="quiz-container"></div>
+        <div id="scoreboard" class="scoreboard">
+          <span>Doğru: <strong>0</strong>
+          </span> | <span>Yanlış: <strong>0</strong>
+          </span>
+        </div>
+        <div id="siviller">
+          <button id="reset-button">Skoru Sıfırla</button>
+          <h4 class="has-small-font-size">Sivilleri Ekle</h4>
+          <label class="switch">
+            <input id="include-civilians-toggle" class="Civilians" onchange="toggleIncludeCivilians()" type="checkbox">
+            <span class="round slider"></span>
+          </label>
+        </div>
+        <details class="about">
+          <summary>Hakkında</summary>
+          <p>Veriler herkese açık olarak yayınlanan <a href="https://web.archive.org/web/20240000000000*/https://www.terorarananlar.pol.tr/tarananlar/" rel="noopener" target="_blank">T.C. İçişleri Bakanlığı Terör Arananlar</a> listesinden alınmaktadır. Sivillerin fotoğrafları yapay zeka ile insan fotoğrafı üreten <a href="https://web.archive.org/web/20240308002349/https://thispersondoesnotexist.com/" rel="noopener" target="_blank">thispersondoesnotexist.com</a> adresinden alınmaktadır.
+        </details>
+        <a class="opyls" href="https://wolkanca.com/terorist-tanima-terorist-testi-oyunu-terorist-quiz/#paylas">Paylaş</a>
+      </div>
+    </figure>
+    <script>
+      "use strict";
+      document.getElementById('reset-button').addEventListener('click', function() {
+        correctScore = 0;
+        incorrectScore = 0;
+        totalQuestionsAnswered = 0;
+        updateScoreboard();
+      });
+      let correctScore = localStorage.getItem('correctScore') ? parseInt(localStorage.getItem('correctScore')) : 0,
+        incorrectScore = localStorage.getItem('incorrectScore') ? parseInt(localStorage.getItem('incorrectScore')) : 0,
+        totalQuestionsAnswered = correctScore + incorrectScore,
+        inpt = document.getElementById("include-civilians-toggle"),
+        includeCivilians, siviller_ekleme = function(e) {
+          if (e) {
+            inpt.classList.add('Civilians');
+            localStorage.setItem("Civilians", "1");
+            includeCivilians = true;
+            inpt.setAttribute("checked", "");
+          } else {
+            inpt.classList.remove('Civilians');
+            localStorage.setItem("Civilians", "0");
+            includeCivilians = false;
+            inpt.removeAttribute("checked");
+          }
+        };
+      if (localStorage.getItem("Civilians") === null) {
+        siviller_ekleme(true);
+      } else if (localStorage.getItem("Civilians") === "1") {
+        siviller_ekleme(true);
+      } else if (localStorage.getItem("Civilians") === "0") {
+        siviller_ekleme();
+      }
+
+      function toggleIncludeCivilians() {
+        inpt.classList.toggle('Civilians');
+        let val = inpt.classList.contains("Civilians") ? "1" : "0";
+        inpt.toggleAttribute("checked");
+        localStorage.setItem("Civilians", val);
+        includeCivilians = !includeCivilians;
+      }
+      window.onstorage = () => {
+        if (localStorage.getItem("Civilians") === "1") {
+          siviller_ekleme(true);
         } else {
-          correctScore = 0;
-          incorrectScore = 0;
-          totalQuestionsAnswered = 0;
-          updateScoreboard();
+          siviller_ekleme();
+        }
+      };
+      async function fetchTerroristData() {
+        try {
+          const response = await fetch('https://raw.githubusercontent.com/wolkanca/redlist-quiz/main/data.json');
+          if (!response.ok) {
+            response = await fetch('https://wolkanca.com/wp-content/uploads/2024/03/trr-data.json');
+          }
+          const data = await response.json();
+          return data.filter((terrorist) => !!terrorist.GorselURL?.length).map(terrorist => {
+            terrorist.IlkGorselURL = "https://www.terorarananlar.pol.tr" + terrorist.IlkGorselURL;
+            return terrorist;
+          });
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          return [];
+        }
+      }
+      async function fetchCivilianData() {
+        try {
+          const civilianData = [];
+          for (let i = 0; i < 750; i++) {
+            const timestamp = new Date().getTime();
+            const civilianImageUrl = 'https://thispersondoesnotexist.com/?timestamp=' + timestamp;
+            civilianData.push({
+              TOrgutAdi: 'Sivil',
+              IlkGorselURL: civilianImageUrl
+            });
+          }
+          return civilianData;
+        } catch (error) {
+          console.error('Hata: Sivil verileri alınamadı:', error);
+          return [];
+        }
+      }
+      async function populateQuizData() {
+        let terroristData = await fetchTerroristData();
+        let civilianData = [];
+        if (includeCivilians) {
+          civilianData = await fetchCivilianData();
+        }
+        const combinedData = includeCivilians ? [...terroristData, ...civilianData] : terroristData;
+        combinedData.sort(() => Math.random() - 0.5);
+        return combinedData;
+      }
+      async function displayQuiz() {
+        const t = await populateQuizData();
+        if (0 === t.length) return void alert("Hata: Veriler yüklenemedi. Lütfen sayfayı yenileyin.");
+        const n = t[Math.floor(Math.random() * t.length)],
+          e = n.TOrgutAdi,
+          i = Array.from(new Set(t.map((t => t.TOrgutAdi)))),
+          r = i.indexOf(e); - 1 !== r && i.splice(r, 1);
+        const a = [];
+        for (let t = 0; t < 3; t++) {
+          const t = Math.floor(Math.random() * i.length);
+          a.push(i[t]), i.splice(t, 1)
+        }
+        const o = [e, ...a].sort((() => Math.random() - .5)),
+          s = document.getElementById("quiz-container");
+        let l = n.IlkGorselURL,
+          c = l.replace(/(https?:\/\/)(.*?)(:*)/g, "$1i0.wp.com/$3"),
+          h = l.split("/").pop().split(".")[0];
+        l.substring(0, l.length - 1);
+        s.innerHTML = `
+								
+							<div class="image-container">
+								<a id="oyunlink" data-cevap="${e}" data-name="${h}" title="Fotoğraf bozuk ise üsteki 🐺 butonuna tıkla" href="https://wolkanca.com/terorist-tanima-terorist-testi-oyunu-terorist-quiz/#oyun">
+									<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.classList.add('error');this.src='${c}?'"/>
+								</a>
+							</div>
+							<h3 class="has-small-font-size">Hangi örgüt?</h3>
+							<div class="abuttons">${o.map((t=>`
+									
+								<button class="answer-button" onclick="checkAnswer('${e}','${t}')">${t}</button>`)).join("")}
+								
+							</div>`;
+        $(".answer-button").filter(function() {
+          return $(this).text() == $("#oyunlink").data("cevap")
+        }).addClass("d0rucvp")
+      }
+      async function checkQuestionCount() {
+        totalQuestionsAnswered++;
+        if (totalQuestionsAnswered % 20 === 0) {
+          const successRate = ((correctScore / totalQuestionsAnswered) * 100).toFixed(0);
+          let title = '';
+          if (successRate >= 80) {
+            title = 'MİT göreve çağırıyor!';
+          } else if (successRate >= 60) {
+            title = 'Yürü be babuş!';
+          } else if (successRate >= 40) {
+            title = 'Ha gayret.';
+          } else {
+            title = 'Hocam göz var izan var ya.';
+          }
+          Swal.fire({
+            title: title,
+            html: `
+								
+							<em>%${successRate}</em> oranla doğru bildin. Devam mı baştan mı?`,
+            showCancelButton: true,
+            confirmButtonText: 'Devam',
+            cancelButtonText: 'Baştan',
+            icon: 'info'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              displayQuiz();
+            } else {
+              correctScore = 0;
+              incorrectScore = 0;
+              totalQuestionsAnswered = 0;
+              updateScoreboard();
+              displayQuiz();
+            }
+          });
+        } else {
           displayQuiz();
         }
-      });
-    } else {
-      displayQuiz();
-    }
-  }
+      }
 
+      function checkAnswer(correctAnswer, selectedAnswer) {
+        if (selectedAnswer === correctAnswer) {
+          Swal.fire({
+            icon: 'success',
+            html: `
+								
+							<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
+								<strong>${correctAnswer}</strong>
+							</span> Bravo! 
+								
+							<small class="d0ru">
+								<span>Doğru: 
+										
+									<strong>${correctScore+1}</strong>
+								</span> | 
+									
+								<span>Yanlış: 
+										
+									<strong>${incorrectScore}</strong>
+								</span>
+							</small>`,
+            confirmButtonText: 'Devam',
+          }).then((result) => {
+            correctScore++;
+            updateScoreboard();
+            checkQuestionCount();
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            html: `
+								
+							<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
+								<strong>${correctAnswer}</strong>
+							</span> Maalesef. 
+								
+							<strong>${correctAnswer}</strong> olacaktı. 
+								
+							<small class="naud0ru">
+								<span>Doğru: 
+										
+									<strong>${correctScore}</strong>
+								</span> | 
+									
+								<span>Yanlış: 
+										
+									<strong>${incorrectScore+1}</strong>
+								</span>
+							</small>`,
+            confirmButtonText: 'Devam',
+          }).then((result) => {
+            incorrectScore++;
+            updateScoreboard();
+            checkQuestionCount();
+          });
+        }
+      }
 
-  function checkAnswer(correctAnswer, selectedAnswer) {
-    if (selectedAnswer === correctAnswer) {
-      Swal.fire({
-        icon: 'success',
-        text: 'Bravo!',
-        confirmButtonText: 'Devam',
-      }).then((result) => {
-        correctScore++;
+      function updateScoreboard() {
+        const scoreboard = document.getElementById('scoreboard');
+        scoreboard.innerHTML = `
+								
+							<span>Doğru: 
+									
+								<strong>${correctScore}</strong>
+							</span> | 
+								
+							<span>Yanlış: 
+									
+								<strong>${incorrectScore}</strong>
+							</span>`;
+        localStorage.setItem('correctScore', correctScore);
+        localStorage.setItem('incorrectScore', incorrectScore);
+      }
+      window.onload = function() {
         updateScoreboard();
-        checkQuestionCount();
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        text: `Maalesef. ${correctAnswer} olacaktı.`,
-        confirmButtonText: 'Devam',
-      }).then((result) => {
-        incorrectScore++;
-        updateScoreboard();
-        checkQuestionCount();
-      });
-    }
-  }
-
-  function updateScoreboard() {
-    const scoreboard = document.getElementById('scoreboard');
-    scoreboard.textContent = `Doğru: ${correctScore} | Yanlış: ${incorrectScore}`;
-
-    localStorage.setItem('correctScore', correctScore);
-    localStorage.setItem('incorrectScore', incorrectScore);
-  }
-
-  window.onload = function() {
-    updateScoreboard();
-    displayQuiz();
-  };
-</script>
-</body>
+        displayQuiz();
+      };
+    </script>
+    <script>
+      jQuery(document).ready((function() {
+        "use strict";
+        $(".michaelsikkofield").on("click", (function(e) {
+          $(".d0rucvp").click()
+        }));
+        $(".featured-media").click(function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+          window.location = "#oyun"
+        });
+        $("#guncelleme1.nhvr").after(' < span class = "devami" >< a href = "javascript://" > Devamı... < /a>< /span>');
+        $("span.devami>a").click(function() {
+          $('#guncelleme1').addClass("hvr");
+          $('#guncelleme1').removeClass("nhvr");
+          $(this).remove()
+        });
+      }));
+    </script>
+  </body>
 </html>
