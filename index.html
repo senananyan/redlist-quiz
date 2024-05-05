@@ -2,8 +2,16 @@
 <html lang="tr">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
     <title>Terrorist Quiz</title>
+    <link rel="dns-prefetch" href="//i0.wp.com">
+    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+    <meta property="og:title" content="Terörist tanıma, terörist testi oyunu: terorist-quiz">
+    <meta property="og:description" content="Terör örgütü bulma oyunu. Terörden arananlar listesi oyunu: terörist quiz. &#8943; Terörist tanıma, terörist testi oyunu: terorist-quiz Oyun, Terörist, Test">
+    <meta property="og:url" content="https://wolkanca.com/terorist-tanima-terorist-testi-oyunu-terorist-quiz/">
+    <link rel="canonical" href="https://wolkanca.com/terorist-tanima-terorist-testi-oyunu-terorist-quiz/">
+    <meta property="og:image" content="https://i0.wp.com/wolkanca.com/wp-content/uploads/2024/03/terorden-arananlar-listesi-oyun.webp" />
+    <meta name="title" content="Terörist tanıma, terörist testi oyunu: terorist-quiz">
     <style>
       :root {
         --la: #f2f2f2;
@@ -531,6 +539,7 @@
         margin-right: 6rem;
       }
     </style>
+    <script defer src="https://eu.umami.is/script.js" data-website-id="1765a6e8-0636-4459-b4f6-a24a80807688"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js" integrity="sha512-ziDG00v9lDjgmzxhvyX5iztPHpSryN/Ct/TAMPmMmS2O3T1hFPRdrzVCSvwnbPbFNie7Yg5mF7NUSSp5smu7RA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
@@ -670,17 +679,20 @@
         l.substring(0, l.length - 1);
         s.innerHTML = `
 								
-							<div class="image-container">
-								<a id="oyunlink" data-cevap="${e}" data-name="${h}" title="Fotoğraf bozuk ise üsteki 🐺 butonuna tıkla" href="#oyun">
-									<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.classList.add('error');this.src='${c}?'"/>
-								</a>
-							</div>
-							<h3 class="has-small-font-size">Hangi örgüt?</h3>
-							<div class="abuttons">${o.map((t=>`
+							
+														<div class="image-container">
+															<a id="oyunlink" data-cevap="${e}" data-name="${h}" title="Fotoğraf bozuk ise üsteki 🐺 butonuna tıkla" href="#oyun">
+																<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.classList.add('error');this.src='${c}?'"/>
+															</a>
+														</div>
+														<h3 class="has-small-font-size">Hangi örgüt?</h3>
+														<div class="abuttons">${o.map((t=>`
 									
-								<button class="answer-button" onclick="checkAnswer('${e}','${t}')">${t}</button>`)).join("")}
 								
-							</div>`;
+															<button class="answer-button" onclick="checkAnswer('${e}','${t}')">${t}</button>`)).join("")}
+								
+							
+														</div>`;
         $(".answer-button").filter(function() {
           return $(this).text() == $("#oyunlink").data("cevap")
         }).addClass("d0rucvp")
@@ -703,7 +715,8 @@
             title: title,
             html: `
 								
-							<em>%${successRate}</em> oranla doğru bildin. Devam mı baştan mı?`,
+							
+														<em>%${successRate}</em> oranla doğru bildin. Devam mı baştan mı?`,
             showCancelButton: true,
             confirmButtonText: 'Devam',
             cancelButtonText: 'Baştan',
@@ -730,21 +743,26 @@
             icon: 'success',
             html: `
 								
-							<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
-								<strong>${correctAnswer}</strong>
-							</span> Bravo! 
+							
+														<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
+															<strong>${correctAnswer}</strong>
+														</span> Bravo! 
 								
-							<small class="d0ru">
-								<span>Doğru: 
+							
+														<small class="d0ru">
+															<span>Doğru: 
 										
-									<strong>${correctScore+1}</strong>
-								</span> | 
 									
-								<span>Yanlış: 
+																<strong>${correctScore+1}</strong>
+															</span> | 
+									
+								
+															<span>Yanlış: 
 										
-									<strong>${incorrectScore}</strong>
-								</span>
-							</small>`,
+									
+																<strong>${incorrectScore}</strong>
+															</span>
+														</small>`,
             confirmButtonText: 'Devam',
           }).then((result) => {
             correctScore++;
@@ -756,23 +774,29 @@
             icon: 'error',
             html: `
 								
-							<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
-								<strong>${correctAnswer}</strong>
-							</span> Maalesef. 
+							
+														<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
+															<strong>${correctAnswer}</strong>
+														</span> Maalesef. 
 								
-							<strong>${correctAnswer}</strong> olacaktı. 
+							
+														<strong>${correctAnswer}</strong> olacaktı. 
 								
-							<small class="naud0ru">
-								<span>Doğru: 
+							
+														<small class="naud0ru">
+															<span>Doğru: 
 										
-									<strong>${correctScore}</strong>
-								</span> | 
 									
-								<span>Yanlış: 
+																<strong>${correctScore}</strong>
+															</span> | 
+									
+								
+															<span>Yanlış: 
 										
-									<strong>${incorrectScore+1}</strong>
-								</span>
-							</small>`,
+									
+																<strong>${incorrectScore+1}</strong>
+															</span>
+														</small>`,
             confirmButtonText: 'Devam',
           }).then((result) => {
             incorrectScore++;
@@ -786,15 +810,19 @@
         const scoreboard = document.getElementById('scoreboard');
         scoreboard.innerHTML = `
 								
-							<span>Doğru: 
+							
+														<span>Doğru: 
 									
-								<strong>${correctScore}</strong>
-							</span> | 
 								
-							<span>Yanlış: 
+															<strong>${correctScore}</strong>
+														</span> | 
+								
+							
+														<span>Yanlış: 
 									
-								<strong>${incorrectScore}</strong>
-							</span>`;
+								
+															<strong>${incorrectScore}</strong>
+														</span>`;
         localStorage.setItem('correctScore', correctScore);
         localStorage.setItem('incorrectScore', incorrectScore);
       }
