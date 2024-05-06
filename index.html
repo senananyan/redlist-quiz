@@ -542,13 +542,12 @@
         margin-right: 6rem;
       }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.10.8/sweetalert2.all.min.js" integrity="sha512-ziDG00v9lDjgmzxhvyX5iztPHpSryN/Ct/TAMPmMmS2O3T1hFPRdrzVCSvwnbPbFNie7Yg5mF7NUSSp5smu7RA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
   <body>
     <figure id="trr">
       <div class="container">
-        <h2 class="has-small-font-size">Terrorist Quiz <a class="michaelsikkofield" href="javascript://" title="michaelsikkofield fix">🐺</a>
+        <h2 class="has-small-font-size">Terrorist Quiz <a class="michaelsikkofield" id="kurt" href="javascript://" title="michaelsikkofield fix">🐺</a>
         </h2>
         <div id="quiz-container"></div>
         <div id="scoreboard" class="scoreboard">
@@ -679,25 +678,18 @@
           c = l.replace(/(https?:\/\/)(.*?)(:*)/g, "$1i0.wp.com/$3"),
           h = l.split("/").pop().split(".")[0];
         l.substring(0, l.length - 1);
-        s.innerHTML = `
-								
-							
-														<div class="image-container">
-															<a id="oyunlink" data-cevap="${e}" data-name="${h}" title="Fotoğraf bozuk ise üsteki 🐺 butonuna tıkla" href="#oyun">
-																<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.classList.add('error');this.src='${c}?'"/>
-															</a>
-														</div>
-														<h3 class="has-small-font-size">Hangi örgüt?</h3>
-														<div class="abuttons">${o.map((t=>`
-									
-								
-															<button class="answer-button" onclick="checkAnswer('${e}','${t}')">${t}</button>`)).join("")}
-								
-							
-														</div>`;
-        $(".answer-button").filter(function() {
-          return $(this).text() == $("#oyunlink").data("cevap")
-        }).addClass("d0rucvp")
+        s.innerHTML = `<div class="image-container">
+					<a id="oyunlink" data-name="${h}" title="Fotoğraf bozuk ise üsteki 🐺 butonuna tıkla" href="#trr">
+						<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.classList.add('error');this.src='${c}?'"/>
+					</a>
+				</div>
+				<h3 class="has-small-font-size">Hangi örgüt?</h3>
+				<div class="abuttons">${o.map((t=>`
+					<button class="answer-button" onclick="checkAnswer('${e}','${t}')" id="${t}">${t}</button>`)).join("")}
+				</div>`;
+        document.getElementById("kurt").addEventListener("click", function(o) {
+          checkAnswer(e, e);
+        });
       }
       async function checkQuestionCount() {
         totalQuestionsAnswered++;
@@ -715,10 +707,7 @@
           }
           Swal.fire({
             title: title,
-            html: `
-								
-							
-														<em>%${successRate}</em> oranla doğru bildin. Devam mı baştan mı?`,
+            html: `<em>%${successRate}</em> oranla doğru bildin. Devam mı baştan mı?`,
             showCancelButton: true,
             confirmButtonText: 'Devam',
             cancelButtonText: 'Baştan',
@@ -743,28 +732,7 @@
         if (selectedAnswer === correctAnswer) {
           Swal.fire({
             icon: 'success',
-            html: `
-								
-							
-														<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
-															<strong>${correctAnswer}</strong>
-														</span> Bravo! 
-								
-							
-														<small class="d0ru">
-															<span>Doğru: 
-										
-									
-																<strong>${correctScore+1}</strong>
-															</span> | 
-									
-								
-															<span>Yanlış: 
-										
-									
-																<strong>${incorrectScore}</strong>
-															</span>
-														</small>`,
+            html: `<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem"><strong>${correctAnswer}</strong></span> Bravo! <small class="d0ru"><span>Doğru:<strong>${correctScore+1}</strong></span> | <span>Yanlış: <strong>${incorrectScore}</strong></span></small>`,
             confirmButtonText: 'Devam',
           }).then((result) => {
             correctScore++;
@@ -774,31 +742,7 @@
         } else {
           Swal.fire({
             icon: 'error',
-            html: `
-								
-							
-														<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem">
-															<strong>${correctAnswer}</strong>
-														</span> Maalesef. 
-								
-							
-														<strong>${correctAnswer}</strong> olacaktı. 
-								
-							
-														<small class="naud0ru">
-															<span>Doğru: 
-										
-									
-																<strong>${correctScore}</strong>
-															</span> | 
-									
-								
-															<span>Yanlış: 
-										
-									
-																<strong>${incorrectScore+1}</strong>
-															</span>
-														</small>`,
+            html: `<span style="position:absolute;top:0;left:0;width:100%;margin:1rem auto;font-size:.8rem"><strong>${correctAnswer}</strong></span> Maalesef. <strong>${correctAnswer}</strong> olacaktı. <small class="naud0ru"><span>Doğru: <strong>${correctScore}</strong></span> | <span>Yanlış: <strong>${incorrectScore+1}</strong></small>`,
             confirmButtonText: 'Devam',
           }).then((result) => {
             incorrectScore++;
@@ -810,21 +754,7 @@
 
       function updateScoreboard() {
         const scoreboard = document.getElementById('scoreboard');
-        scoreboard.innerHTML = `
-								
-							
-														<span>Doğru: 
-									
-								
-															<strong>${correctScore}</strong>
-														</span> | 
-								
-							
-														<span>Yanlış: 
-									
-								
-															<strong>${incorrectScore}</strong>
-														</span>`;
+        scoreboard.innerHTML = `<span>Doğru: <strong>${correctScore}</strong></span> | <span>Yanlış: <strong>${incorrectScore}</strong></span>`;
         localStorage.setItem('correctScore', correctScore);
         localStorage.setItem('incorrectScore', incorrectScore);
       }
@@ -833,14 +763,5 @@
         displayQuiz();
       };
     </script>
-    <script>
-      jQuery(document).ready((function() {
-        "use strict";
-        $(".michaelsikkofield").on("click", (function(e) {
-          $(".d0rucvp").click()
-        }));
-      }));
-    </script>
-    <script defer src="https://eu.umami.is/script.js" data-website-id="1765a6e8-0636-4459-b4f6-a24a80807688"></script>
   </body>
 </html>
