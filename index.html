@@ -9,6 +9,7 @@
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
     <meta property="og:title" content="Terörist tanıma, terörist testi oyunu: terorist-quiz">
     <meta property="og:description" content="Terör örgütü bulma oyunu. Terörden arananlar listesi oyunu: terörist quiz. - Terörist tanıma, terörist testi oyunu: terorist-quiz Oyun, Terörist, Test">
+    <meta name="description" content="Terör örgütü bulma oyunu. Terörden arananlar listesi oyunu: terörist quiz. - Terörist tanıma, terörist testi oyunu: terorist-quiz Oyun, Terörist, Test">
     <meta property="og:url" content="https://wolkanca.com/terorist-tanima-terorist-testi-oyunu-terorist-quiz/">
     <link rel="canonical" href="https://wolkanca.com/terorist-tanima-terorist-testi-oyunu-terorist-quiz/">
     <meta property="og:image" content="https://github.com/wolkanca/redlist-quiz/assets/480403/58550eac-98e0-4aa4-a829-5f641235d8c3">
@@ -159,7 +160,7 @@
       }
       #trr #reset-button {
         font-size: x-small;
-        background: red;
+        background: var(--accent);
         flex-grow: 0;
         margin-right: 10%;
       }
@@ -313,11 +314,11 @@
       }
       #scoreboard>span:first-child>strong,
       .d0ru>span:first-child>strong {
-        color: green;
+        color: var(--yesil);
       }
       #scoreboard>span:not(:first-child)>strong,
       .naud0ru>span:not(:first-child)>strong {
-        color: red;
+        color: var(--accent);
       }
       html.swal2-shown,
       html.swal2-shown>body {
@@ -376,7 +377,7 @@
         z-index: 999;
         content: "Acil durumlar harici kullanma! 🚨";
         font-size: 1.3rem;
-        color: red;
+        color: var(--accent);
         font-weight: normal;
         display: block;
         width: 9rem;
@@ -399,7 +400,7 @@
           <button id="reset-button">Skoru Sıfırla</button>
           <h4 class="has-small-font-size">Sivilleri Ekle</h4>
           <label class="switch">
-            <input id="include-civilians-toggle" class="Civilians" onchange="toggleIncludeCivilians()" type="checkbox">
+            <input id="include-civilians-toggle" class="Civilians" onchange="toggleIncludeCivilians()" type="checkbox" aria-label="Sivilleri Ekle">
             <span class="round slider"></span>
           </label>
         </div>
@@ -519,8 +520,8 @@
         l.substring(0, l.length - 1);
         s.innerHTML = `<a class="michaelsikkofield" onclick="checkAnswer('${e}','${e}')" href="javascript://" title="michaelsikkofield fix">🐺</a>
 				<div class="image-container">
-					<a id="oyunlink" data-name="${h}" title="Fotoğraf bozuk ise üsteki 🐺 butonuna tıkla" href="#trr">
-						<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.classList.add('error');this.src='${c}?';this.onerror=null"/>
+					<a id="oyunlink" title="Fotoğraf bozuk ise üsteki 🐺 butonuna tıkla" href="#trr">
+						<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.onerror=null;this.classList.add('error');this.src='${c}?'" alt="${h}"/>
 					</a>
 				</div>
 				<h3 class="has-small-font-size">Hangi örgüt?</h3>
