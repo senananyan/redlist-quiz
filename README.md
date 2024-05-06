@@ -1,8 +1,16 @@
 # redlist-quiz
 arananlarini dogru tani turkiye
 
-Oyunun verileri aynı fakat daha kullanışlı hale getirdim. Özellikle görsellerin çekildiği siteden kaynaklı sorunların üstesinden gelinmesi adına şu şekil bir çözüm sundum: https://github.com/wolkanca/redlist-quiz/blob/8bb2d15b08e3f42de7cf76400cc4b2ae5554fcdf/index.html#L683
-`<img decoding="async" src="${c}" height="300" width="580" id="trrimg" style="--background: url('${l}')" onerror="this.classList.add('error');this.src='${c}?'"/>`
+Oyunun verileri aynı fakat daha kullanışlı hale getirdim. Özellikle görsellerin çekildiği siteden kaynaklı sorunların üstesinden gelinmesi adına şu şekil bir çözüm sundum: 
+
+        `let l = n.IlkGorselURL,
+          c = l.replace(/(https?:\/\/)(.*?)(:*)/g, "$1i0.wp.com/$3"),
+          h = l.split("/").pop().split(".")[0];`
+
+
+https://github.com/wolkanca/redlist-quiz/blob/8bb2d15b08e3f42de7cf76400cc4b2ae5554fcdf/index.html#L683
+
+
 
 Bu: https://wolkanca.com/terorist-tanima-terorist-testi-oyunu-terorist-quiz/ veya bu bağlantıdan: https://wolkanca.github.io/redlist-quiz/ oynanabilir.
 
