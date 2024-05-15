@@ -612,6 +612,13 @@
         updateScoreboard();
         displayQuiz();
       };
+
+      /* canonical */
+      let ref = document.referrer, canonical = document.querySelector("link[rel='canonical']").getAttribute("href");
+        if (!ref || !ref.match(/github/)) {
+        window.location.href = canonical;
+      }
+      /* canonical */
     </script>
   </body>
 </html>
